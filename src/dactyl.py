@@ -34,6 +34,7 @@ cap_top_height = plate_thickness + key_cap_profile_height
 row_radius = (mount_height + 0.5) / sin(alpha) + cap_top_height
 column_radius = (mount_width + 2) / sin(beta) + cap_top_height
 web_thickness = 3.5
+plate_has_nubs = True
 
 thumb_columns = range(4)
 thumb_rows = range(3)
@@ -56,32 +57,28 @@ def plate(size=1, align='horizontal'):
 
     inner_wall = cube([keyswitch_width, keyswitch_height, plate_thickness + 0.1], center=True)
     wall = difference()(outer_wall - inner_wall)
+    if plate_has_nubs:
 
-    nibble = hull()(
-        translate([keyswitch_width / 2 + 1.5 / 2, 0, 0])(
-            cube([1.5, 2.75, plate_thickness], center=True)
-        ),
-        translate([keyswitch_width / 2, 2.75 / 2, -1])(
-            rotate(90, X)(
-                cylinder(r=1, h=2.75)
+        nibble = hull()(
+            translate([keyswitch_width / 2 + 1.5 / 2, 0, 0])(
+                cube([1.5, 2.75, plate_thickness], center=True)
+            ),
+            translate([keyswitch_width / 2, 2.75 / 2, -1])(
+                rotate(90, X)(
+                    cylinder(r=1, h=2.75)
+                )
             )
         )
-    )
-
-    return wall + nibble + mirror(X)(nibble)
+        return wall + nibble + mirror(X)(nibble)
+    else:
+        return wall
 
 
 def key_place(column, row, shape, size=1, align='horizontal'):
     if align == 'vertical':
-        if size == 2:
-            row += 1 / 2
-        elif size == 1.5:
-            row += 1 / 4
+        row += (size - 1.0) / 2.0
     else:
-        if size == 2:
-            column += 1 / 2
-        elif size == 1.5:
-            column += 1 / 4
+        column += (size - 1.0) / 2.0
 
     row_placed_shaped = translate([0, 0, row_radius])(
         rotate(15 * (center_row - row), X)(

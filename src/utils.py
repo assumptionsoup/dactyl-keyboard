@@ -16,10 +16,7 @@ def partition(n, step, coll):
 
 def triangle_hulls(shapes):
     p = partition(3, 1, shapes)
-    h = []
-    for i in p:
-        h.append(hull()(i))
-
+    h = [hull()(i) for i in p]
     return union()(h)
 
 
